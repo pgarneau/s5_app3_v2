@@ -23,10 +23,24 @@ void resetXbee() {
     xbeeResetPin = 1;
 }
 
-void sendXbee(char *data) {
-    pc.printf("Sending characters: \n\r");
+void readXbee() {
+	while (!xbee.readable()) {
+	}
+	while (xbee.readable()) {
+		uint8_t received_char = xbee.getc();
+		if (received_char == 0x7e) {
+			pc.printf("\n\rReceived: \n\r");
+		}
+		pc.printf("%02X ", received_char);
+		wait_ms(50);
+	}
+	pc.printf("\n\r\n\r");
+}
+
+void sendXbee(char *data, int dataLength) {
+    pc.printf("Sending characters: ");
     
-    for (uint8_t index = 0; index < sizeof(data); index++) {
+    for (uint8_t index = 0; index < dataLength; index++) {
         xbee.putc(data[index]);
         pc.printf("%02X ", data[index]);
         wait_ms(25);
@@ -35,7 +49,7 @@ void sendXbee(char *data) {
 }
 
 void setChecksum(char *commandFrame) {
-    uint16_t length = ((uint16_t)commandFrame[1] << 8) + commandFrame[2];
+    uint16_t length = ((uint16_t)commandFrame[LENGTH_MSB_INDEX] << 8) + commandFrame[LENGTH_LSB_INDEX];
     
     char sum = 0;
     int max = length + 3;
@@ -47,24 +61,28 @@ void setChecksum(char *commandFrame) {
     commandFrame[max] = 0xff - sum;
 }
 
-void sendCommand(char *command, char *data) {
+void sendCommand(char *command, char *data, uint8_t dataLength) {
     char commandFrame[128];
-    commandFrame[0] = START;
-    commandFrame[1] = get_MSB(sizeof(data) + AT_MIN_SIZE);
-    commandFrame[2] = get_LSB(sizeof(data) + AT_MIN_SIZE);
-    commandFrame[3] = AT_COMMAND_ID;
-    commandFrame[4] = FRAME_ID;
-    memcpy(&commandFrame[5], command, CMD_SIZE);
-    memcpy(&commandFrame[6], data, sizeof(data));
+    commandFrame[START_INDEX] = START;
+    commandFrame[LENGTH_MSB_INDEX] = get_MSB(dataLength + MIN_FRAME_DATA_SIZE);
+    commandFrame[LENGTH_LSB_INDEX] = get_LSB(dataLength + MIN_FRAME_DATA_SIZE);
+    commandFrame[COMMAND_ID_INDEX] = AT_COMMAND_ID;
+    commandFrame[FRAME_ID_INDEX] = FRAME_ID;
+    memcpy(&commandFrame[5], command, COMMAND_SIZE);
+    memcpy(&commandFrame[7], data, dataLength);
     
     setChecksum(commandFrame);
     
-    sendXbee(commandFrame);  
+    sendXbee(commandFrame, dataLength + MIN_COMMAND_FRAME_SIZE);  
 }
 
 void initXbee(char *panId) {
     resetXbee();
-    sendCommand("ID", panId);
-    sendCommand("WR", 0);
-    sendCommand("AC", 0);
+	readXbee();
+    sendCommand("ID", panId, 8);
+	readXbee();
+    sendCommand("WR", 0, 0);
+	readXbee();
+    sendCommand("AC", 0, 0);
+	readXbee();
 }
