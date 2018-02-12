@@ -1,6 +1,7 @@
 #include "mbed.h"
 #include "config.h"
 #include "xbee.h"
+#include "MMA8452.h"
 
 DigitalOut led1(LED1);
 Semaphore test;

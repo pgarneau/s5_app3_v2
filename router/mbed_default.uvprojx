@@ -4030,6 +4030,16 @@
               <FileType>5</FileType>
               <FilePath>.\xbee.h</FilePath>
             </File>
+            <File>
+              <FileName>MMA8452.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\MMA8452.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>MMA8452.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\MMA8452.h</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
