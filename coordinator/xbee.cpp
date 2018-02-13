@@ -23,19 +23,26 @@ void resetXbee() {
     xbeeResetPin = 1;
 }
 
-void readXbee() {
+void readXbee(int *readData) {
+	int counter = 0;
+	memset(readData, 0, 128);
+	
 	while (!xbee.readable()) {
 	}
 	while (xbee.readable()) {
 		uint8_t received_char = xbee.getc();
+		readData[counter] = received_char;
 		if (received_char == 0x7e) {
 			pc.printf("\n\rReceived: \n\r");
 		}
 		pc.printf("%02X ", received_char);
+		counter++;
 		wait_ms(50);
 	}
 	pc.printf("\n\r\n\r");
 }
+
+
 
 void sendXbee(char *data, int dataLength) {
     pc.printf("Sending characters: ");
@@ -76,13 +83,37 @@ void sendCommand(char *command, char *data, uint8_t dataLength) {
     sendXbee(commandFrame, dataLength + MIN_COMMAND_FRAME_SIZE);  
 }
 
-void initXbee(char *panId) {
+void sendCommandRequest(char *command, char *mac, int parameter, int dataLength) {
+	char commandFrame[128];
+	commandFrame[START_INDEX] = START;
+	commandFrame[LENGTH_MSB_INDEX] = get_MSB(dataLength + MIN_COMMAND_REQUEST_FRAME_DATA_SIZE);
+	commandFrame[LENGTH_LSB_INDEX] = get_LSB(dataLength + MIN_COMMAND_REQUEST_FRAME_DATA_SIZE);
+	commandFrame[COMMAND_ID_INDEX] = REMOTE_AT_COMMAND;
+	commandFrame[FRAME_ID_INDEX] = FRAME_ID;
+	memcpy(&commandFrame[5], mac, 8);
+	commandFrame[13] = 0xFF;
+	commandFrame[14] = 0xFE;
+	commandFrame[15] = 0x02;
+	memcpy(&commandFrame[16], command, 2);
+	commandFrame[18] = parameter;
+	
+	setChecksum(commandFrame);
+	
+	sendXbee(commandFrame, dataLength + MIN_COMMAND_REQUEST_FRAME_SIZE);
+}
+
+void sendRemoteCommand() {
+	char commandFrame[128];
+	commandFrame[START_INDEX] = START;
+}
+
+void initXbee(char *panId, int *readData) {
     resetXbee();
-	readXbee();
+	readXbee(readData);
     sendCommand("ID", panId, 8);
-	readXbee();
+	readXbee(readData);
     sendCommand("WR", 0, 0);
-	readXbee();
+	readXbee(readData);
     sendCommand("AC", 0, 0);
-	readXbee();
+	readXbee(readData);
 }
