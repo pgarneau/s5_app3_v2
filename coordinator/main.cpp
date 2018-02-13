@@ -30,9 +30,9 @@ void getMacAddress(int *readData) {
 
 void readConfig() {
 	FILE *fp = fopen("/local/config.txt", "r");
-	fscanf(fp, "%d %f", &panId, &echantillonage);
+	fscanf(fp, "%d %s", &panId, server);
 	printf("PanId: %d\n\r", panId);
-	printf("Server: %f\n\r\r", echantillonage);
+	printf("Server: %s\n\r\r", server);
 	fclose(fp);
 	convertPanId(panId);
 }
@@ -47,11 +47,6 @@ void flashLed() {
 	}
 }
 	
-	void getBtnStatus(){
-		if(btn==1){
-			pcc.printf("BTN ON ::\n\r");
-		}
-	}
 int main() {
 	// Read config from file
 	readConfig();
@@ -67,25 +62,8 @@ int main() {
 	// Attach ticker to function making LED flash on router
 	ticker.attach(flashLed, 1);
 	
-	initXbee(panIdChar);
- pcc.printf("Avant send transmit\n\r");
-	//char buffer_send[21] = {0x7E ,0x00 ,0x11 ,0x10 ,0x01 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0x00 ,0xFF ,0xFE ,0x00 ,0x00 ,0x61 ,0x73 ,0x64,0xB9};
-	//sendXbee(buffer_send,21);
-
-	//readXbee();
-	int a = sizeof(PUSSY);
-	 pcc.printf("Apres send transmit, sizeof = %i\n\r",a);
-		
-		sendTransmit(PUSSY,a);
-		readXbee();
     while (true) {
-			
-
-		for(int i=0; i<function_cpt; ++i){
-			myFunctionArray[i]();			
-		}
-			
-        led1 = !led1;
-		wait(echantillonage);
+        readXbee(readData);
+		printf("RECEIVED INPUT FROM: %x CONTAINING: %x\n\r", readData[15], readData[16]);
     }
 }
