@@ -3,41 +3,28 @@
 #include "xbee.h"
 
 DigitalOut led1(LED1);
-Semaphore test;
-Serial pcc(USBTX, USBRX);
+
+Ticker ticker;
 
 	
 char data[DATA_BUFFER_SIZE - 1] = {0};
-char PUSSY[] = {0x01,0x90};
+
+bool ledOn = false;
 int panId = 0;
 char panIdChar[8];
-float echantillonage =0;
-
-//Accelero et btn
-
-I2C i2c(p28, p27);
-const int accAddr = 0x1D << 1;
-const int accZRegisterMSB = 0x05;
-const double PI = 3.14159265359;
-const int uint14Max = 16383;
-int intAngle;
-DigitalIn btn(p21);
-//Declaration des fonctions allant dans le tableau, plusieurs autres peuvent etre ajoutes
-void calculateAngleAcc();
-void getBtnStatus();
-
-//Declaration du tableau de fonction 
-/**** **** **** **** **** **** **** **** 
-SECTION A CHANGER POUR AJOUTER DES FONCTIONS
-******** **** **** **** **** **** **** **********************************/
-
-void(*myFunctionArray[])(void) = {calculateAngleAcc,getBtnStatus};
-const int function_cpt = 2;
-/*********************************************************************/
+char macAddressChar[8];
+char server[16] = {0};
+int readData[128];
 
 void convertPanId(int panId) {
 	for (int i = 0; i < 8; i++) {
 		panIdChar[i] = (panId >> (56 - 8 * i)) & 0xFF;
+	}
+}
+
+void getMacAddress(int *readData) {
+	for (int i = 4; i < 12; i++) {
+		macAddressChar[i - 4] = readData[i];
 	}
 }
 
@@ -50,53 +37,15 @@ void readConfig() {
 	convertPanId(panId);
 }
 
-float GetAxisAcc(int addr) {
-    uint8_t data[2];
-    char axisRegister[1] = {(char)addr};
-    i2c.write(accAddr, axisRegister, 1, true);
-    i2c.read(accAddr, (char *)data, 2);
-
-    int16_t axisAcc = (data[0] << 6) | (data[1] >> 2);
-    if (axisAcc > uint14Max/2)
-        axisAcc -= uint14Max;
- 
-    return axisAcc / 4096.0;
-}
-int CalculateAngle(float z){
-    if(z > 1){
-        z = 1;
-    }
-    if(z < -1){
-        z = -1;    
-    }
-
-    double angle = std::acos(z);
-
-    if(angle > PI/2)
-    {
-        angle = PI - angle;
-    }
-
-    return (int)(angle*180/PI);
-}
-
-	int acceleroConfig()  {
-		int resetAngle = 0;
-		uint8_t initializeAcc[2] = {0x2A, 0x01};
-		i2c.write(accAddr, (char *)initializeAcc, 2);
-		
-		
-
-		
+void flashLed() {
+	if (!ledOn) {
+		sendCommandRequest("D4", macAddressChar, 0x05, 1);
+		ledOn = !ledOn;
+	} else {
+		sendCommandRequest("D4", macAddressChar, 0x04, 1);
+		ledOn = !ledOn;
 	}
-	
-	void calculateAngleAcc(){
-			float zAxis = GetAxisAcc(accZRegisterMSB);
-			intAngle = CalculateAngle(zAxis);
-		if(intAngle>15){
-			pcc.printf("angle is = %i",intAngle);
-		}
-	}
+}
 	
 	void getBtnStatus(){
 		if(btn==1){
@@ -104,8 +53,19 @@ int CalculateAngle(float z){
 		}
 	}
 int main() {
+	// Read config from file
 	readConfig();
-	acceleroConfig();
+
+	// Initialize the Xbee
+	initXbee(panIdChar, readData);
+	
+	//Get MAC Address
+	readXbee(readData);
+	printf("MAC: %x %x %x %x %x %x %x %x\n\r", readData[4], readData[5], readData[6], readData[7], readData[8], readData[9], readData[10], readData[11]);
+	getMacAddress(readData);
+	
+	// Attach ticker to function making LED flash on router
+	ticker.attach(flashLed, 1);
 	
 	initXbee(panIdChar);
  pcc.printf("Avant send transmit\n\r");
