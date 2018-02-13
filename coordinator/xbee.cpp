@@ -21,7 +21,7 @@ uint8_t get_LSB(uint16_t data) {
 
 void resetXbee() {
     xbeeResetPin = 0;
-    wait_ms(400);
+    wait_ms(410);
     xbeeResetPin = 1;
 }
 
@@ -39,7 +39,7 @@ void readXbee(int *readData) {
 		}
 		pc.printf("%02X ", received_char);
 		counter++;
-		wait_ms(5);
+		wait_ms(10);
 	}
 	pc.printf("\n\rDone receiving\n\r");
 }
@@ -71,8 +71,8 @@ void sendXbee(char *data, int dataLength) {
     
     for (uint8_t index = 0; index < dataLength; index++) {
         xbee.putc(data[index]);
-        //pc.printf("%02X ", data[index]);
-        //wait_ms(15);
+        pc.printf("%02X ", data[index]);
+        wait_ms(1);
     }
 	pc.printf("\n\r");
    

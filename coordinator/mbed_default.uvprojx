@@ -4030,6 +4030,16 @@
               <FileType>5</FileType>
               <FilePath>.\xbee.h</FilePath>
             </File>
+            <File>
+              <FileName>Websocket.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Websocket.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>Websocket.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Websocket.h</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

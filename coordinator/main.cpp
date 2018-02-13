@@ -1,8 +1,11 @@
 #include "mbed.h"
 #include "config.h"
 #include "xbee.h"
+#include "EthernetInterface.h"
+#include "Websocket.h"
 
 DigitalOut led1(LED1);
+Serial pcc(USBTX, USBRX);
 
 Ticker ticker;
 
@@ -29,10 +32,12 @@ void getMacAddress(int *readData) {
 }
 
 void readConfig() {
+	pcc.printf("TRYING TO OPEN FILE \n\r");
 	FILE *fp = fopen("/local/config.txt", "r");
+	pcc.printf("OPENED THE FILE \n\r");
 	fscanf(fp, "%d %s", &panId, server);
-	printf("PanId: %d\n\r", panId);
-	printf("Server: %s\n\r\r", server);
+	pcc.printf("PanId: %d\n\r", panId);
+	pcc.printf("Server: %s\n\r\r", server);
 	fclose(fp);
 	convertPanId(panId);
 }
@@ -48,7 +53,16 @@ void flashLed() {
 }
 	
 int main() {
-	// Read config from file
+	// Websockets qui fonctionnent pas
+//	EthernetInterface eth;
+//	eth.set_network("10.43.138.170", "255.255.255.0", "10.43.138.1");
+//	eth.connect();
+//	printf("IP Address is %s\n\r", eth.get_ip_address());
+//	Websocket ws("ws://10.43.157.181:8000/", &eth);
+//	bool resulting = ws.connect();
+//	char recv[128];
+
+//	int allo = ws.send("ALLO CEST PHIL");
 	readConfig();
 
 	// Initialize the Xbee
@@ -64,6 +78,8 @@ int main() {
 	
     while (true) {
         readXbee(readData);
+		// readData[15] -> 0 = angle, 1 = button
+		// readData[16] -> result
 		printf("RECEIVED INPUT FROM: %x CONTAINING: %x\n\r", readData[15], readData[16]);
     }
 }
