@@ -20,7 +20,6 @@
 
 #define AT_MIN_SIZE 4
 #define TRANSMIT_MIN_SIZE   14
-#define FRAME
 
 #define AT_COMMAND_ID 0x09
 #define ZIGBEE_TRANSMIT_ID 0x10
