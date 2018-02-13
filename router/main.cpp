@@ -93,14 +93,22 @@ int CalculateAngle(float z){
 	void calculateAngleAcc(){
 			float zAxis = GetAxisAcc(accZRegisterMSB);
 			intAngle = CalculateAngle(zAxis);
-		if(intAngle>15){
-			pcc.printf("angle is = %i",intAngle);
+		if(intAngle>20){
+		pcc.printf("Angle is %i ::\n\r",intAngle);
+			char angle[] = {0x00,(char)intAngle};
+			int a = sizeof(angle);
+			sendTransmit(angle,a);
+			
+	}			
 		}
-	}
+
 	
 	void getBtnStatus(){
 		if(btn==1){
 			pcc.printf("BTN ON ::\n\r");
+			char bouton[] = {0x01,0x01};
+				int a = sizeof(bouton);
+			sendTransmit(bouton,a);
 		}
 	}
 int main() {
@@ -117,7 +125,9 @@ int main() {
 	 pcc.printf("Apres send transmit, sizeof = %i\n\r",a);
 		
 		sendTransmit(PUSSY,a);
-		readXbee();
+		//readXbee();
+	
+	pcc.printf("\n\r* * * * ** * * * * * * * * * * * * *\n\r DETECTION SECTION \n\r* * * * ** * * * * * * * * * * * * *\n\r");
     while (true) {
 			
 

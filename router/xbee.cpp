@@ -41,14 +41,14 @@ void readXbee() {
 
 
 void sendXbee(char *data, int dataLength) {
-    pc.printf("Sending characters: ");
+    pc.printf("\n\rSending START characters : \n\r");
     
     for (uint8_t index = 0; index < dataLength; index++) {
         xbee.putc(data[index]);
         pc.printf("%02X ", data[index]);
         wait_ms(25);
     }
-   
+		pc.printf("\n\rSending FINISH:: \n\r");
 }
 
 void setChecksum(char *commandFrame) {
@@ -92,18 +92,19 @@ void sendTransmit(char *data, int dataLength) {
 		commandFrame[16]= 0x00;
 	
 	
-		for(int i = 0; i<dataLength; ++i){
-		pc.printf("meme copy index %i = %c \n\r",i,data[i]);
-	}
+	//	for(int i = 0; i<dataLength; ++i){
+	//	pc.printf("meme copy index %i = %c \n\r",i,data[i]);
+	//}
 		memcpy(&commandFrame[17], data, dataLength);
 	int commandSize = 17 + dataLength;
-	for(int i = 0; i<commandSize; ++i){
- pc.printf("index[ %i ] = %02x \n\r",i,commandFrame[i]);
-	}
-	  pc.printf("le data length envoyer is %i + %i\n\r",dataLength , MIN_COMMAND_FRAME_SIZE);
+	//for(int i = 0; i<commandSize; ++i){
+ //pc.printf("index[ %i ] = %02x \n\r",i,commandFrame[i]);
+	//}
+	 // pc.printf("le data length envoyer is %i + %i\n\r",dataLength , MIN_COMMAND_FRAME_SIZE);
 		setChecksum(commandFrame);
 		commandSize++;
     sendXbee(commandFrame, commandSize);  
+		readXbee();
     
 }
 
@@ -124,6 +125,7 @@ void sendCommandRequest(char *command, char *mac, int parameter, int dataLength)
 	setChecksum(commandFrame);
 	
 	sendXbee(commandFrame, dataLength + MIN_COMMAND_REQUEST_FRAME_SIZE);
+
 }
 
 void sendRemoteCommand() {
