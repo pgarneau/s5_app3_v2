@@ -381,6 +381,16 @@
           <GroupName>mbed-os</GroupName>
           <Files>
             <File>
+              <FileName>MMA8452.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\..\..\Downloads\MMA8452_Demo_uvision5_lpc1768\MMA8452_Demo\MMA8452\MMA8452.h</FilePath>
+            </File>
+            <File>
+              <FileName>MMA8452.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\Downloads\MMA8452_Demo_uvision5_lpc1768\MMA8452_Demo\MMA8452\MMA8452.cpp</FilePath>
+            </File>
+            <File>
               <FileName>aes.c</FileName>
               <FileType>1</FileType>
               <FilePath>mbed-os/features/mbedtls/src/aes.c</FilePath>
@@ -4029,16 +4039,6 @@
               <FileName>xbee.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\xbee.h</FilePath>
-            </File>
-            <File>
-              <FileName>MMA8452.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>.\MMA8452.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>MMA8452.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\MMA8452.h</FilePath>
             </File>
           </Files>
         </Group>

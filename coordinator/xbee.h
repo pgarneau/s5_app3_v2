@@ -17,10 +17,16 @@
 #define MIN_COMMAND_FRAME_SIZE 8
 
 #define AT_MIN_SIZE 4
+#define TRANSMIT_MIN_SIZE   14
 #define FRAME
 
 #define AT_COMMAND_ID 0x09
+#define ZIGBEE_TRANSMIT_ID 0x10
+#define MAC_SIZE 8
+
 
 void initXbee(char *panId);
 void readXbee();
+void sendTransmit(char *data, int dataLength);
+void sendXbee(char *data, int dataLength);
 #endif

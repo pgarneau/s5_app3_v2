@@ -4,6 +4,7 @@
 Serial xbee(p13, p14);
 Serial pc(USBTX, USBRX);
 DigitalOut xbeeResetPin(p8);
+const char MAC_MASK[]={0,0,0,0,0,0,0,0};
 
 uint8_t get_MSB(uint16_t data) {
     uint8_t MSB = (data >> 8) & 0x00FF;
@@ -34,7 +35,7 @@ void readXbee() {
 		pc.printf("%02X ", received_char);
 		wait_ms(50);
 	}
-	pc.printf("\n\r\n\r");
+	pc.printf("\n\rDone receiving\n\r");
 }
 
 void sendXbee(char *data, int dataLength) {
@@ -45,7 +46,7 @@ void sendXbee(char *data, int dataLength) {
         pc.printf("%02X ", data[index]);
         wait_ms(25);
     }
-    pc.printf("\n\r");
+   
 }
 
 void setChecksum(char *commandFrame) {
@@ -74,6 +75,34 @@ void sendCommand(char *command, char *data, uint8_t dataLength) {
     setChecksum(commandFrame);
     
     sendXbee(commandFrame, dataLength + MIN_COMMAND_FRAME_SIZE);  
+}
+void sendTransmit(char *data, int dataLength) {
+	 char commandFrame[128];
+    commandFrame[START_INDEX] = START;
+    commandFrame[LENGTH_MSB_INDEX] = get_MSB(dataLength +TRANSMIT_MIN_SIZE);
+    commandFrame[LENGTH_LSB_INDEX] = get_LSB(dataLength +TRANSMIT_MIN_SIZE);
+    commandFrame[COMMAND_ID_INDEX] = ZIGBEE_TRANSMIT_ID;
+    commandFrame[FRAME_ID_INDEX] = FRAME_ID;
+	  memcpy(&commandFrame[5], MAC_MASK, MAC_SIZE);
+		commandFrame[13]=0xFF;
+		commandFrame[14]= 0xFE;
+		commandFrame[15]= 0x00;
+		commandFrame[16]= 0x00;
+	
+	
+		for(int i = 0; i<dataLength; ++i){
+		pc.printf("meme copy index %i = %c \n\r",i,data[i]);
+	}
+		memcpy(&commandFrame[17], data, dataLength);
+	int commandSize = 17 + dataLength;
+	for(int i = 0; i<commandSize; ++i){
+ pc.printf("index[ %i ] = %02x \n\r",i,commandFrame[i]);
+	}
+	  pc.printf("le data length envoyer is %i + %i\n\r",dataLength , MIN_COMMAND_FRAME_SIZE);
+		setChecksum(commandFrame);
+		commandSize++;
+    sendXbee(commandFrame, commandSize);  
+    
 }
 
 void initXbee(char *panId) {
