@@ -7,24 +7,28 @@ DigitalOut xbeeResetPin(p8);
 const char MAC_MASK[]={0,0,0,0,0,0,0,0};
 int swag[128];
 
+// Extrait le most significant byte
 uint8_t get_MSB(uint16_t data) {
     uint8_t MSB = (data >> 8) & 0x00FF;
     
     return MSB;
 }
 
+// Extrait le least significant byte de la longueur
 uint8_t get_LSB(uint16_t data) {
     uint8_t LSB = data & 0x00FF;
     
     return LSB;
 }
 
+// Reset du Xbee pour qui'il s'active
 void resetXbee() {
     xbeeResetPin = 0;
     wait_ms(410);
     xbeeResetPin = 1;
 }
 
+// Lecture du port serie provenant du xbee
 void readXbee(int *readData) {
 	int counter = 0;
 	memset(readData, 0, 128);
@@ -44,6 +48,7 @@ void readXbee(int *readData) {
 	pc.printf("\n\rDone receiving\n\r");
 }
 
+// Lecture du port serie provenant du xbee et qui confirme que la commande envoyee a bien ete envoyee
 void confirmCommand(int command) {
 	int counter = 0;
 	memset(swag, 0, 128);
@@ -65,7 +70,7 @@ void confirmCommand(int command) {
 }
 
 
-
+// Envoie du data vers xbee par port serie
 void sendXbee(char *data, int dataLength) {
     pc.printf("Sending characters: ");
     
@@ -78,6 +83,7 @@ void sendXbee(char *data, int dataLength) {
    
 }
 
+// Calcul du checksum pour mettre dans la trame
 void setChecksum(char *commandFrame) {
     uint16_t length = ((uint16_t)commandFrame[LENGTH_MSB_INDEX] << 8) + commandFrame[LENGTH_LSB_INDEX];
     
@@ -91,6 +97,7 @@ void setChecksum(char *commandFrame) {
     commandFrame[max] = 0xff - sum;
 }
 
+// Envoie d'une commande normale
 void sendCommand(char *command, char *data, uint8_t dataLength) {
     char commandFrame[128];
     commandFrame[START_INDEX] = START;
@@ -107,6 +114,7 @@ void sendCommand(char *command, char *data, uint8_t dataLength) {
 	confirmCommand(0x88);
 }
 
+// Envoie d'un remote AT command request
 void sendCommandRequest(char *command, char *mac, int parameter, int dataLength) {
 	char commandFrame[128];
 	commandFrame[START_INDEX] = START;
@@ -128,11 +136,13 @@ void sendCommandRequest(char *command, char *mac, int parameter, int dataLength)
 	//confirmCommand(0x97);
 }
 
+// Resultat d'un merge conflict
 void sendRemoteCommand() {
 	char commandFrame[128];
 	commandFrame[START_INDEX] = START;
 }
 
+// initialisation du xbee avec le bon PANID
 void initXbee(char *panId, int *readData) {
     resetXbee();
 	readXbee(readData);

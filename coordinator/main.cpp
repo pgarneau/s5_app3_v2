@@ -1,3 +1,5 @@
+//garp2405 et gaga2515
+
 #include "mbed.h"
 #include "config.h"
 #include "xbee.h"
@@ -19,18 +21,21 @@ char macAddressChar[8];
 char server[16] = {0};
 int readData[128];
 
+// Convert le panid en int dans un tableau de char de 8 bytes
 void convertPanId(int panId) {
 	for (int i = 0; i < 8; i++) {
 		panIdChar[i] = (panId >> (56 - 8 * i)) & 0xFF;
 	}
 }
 
+// Convert la mac address lue en char
 void getMacAddress(int *readData) {
 	for (int i = 4; i < 12; i++) {
 		macAddressChar[i - 4] = readData[i];
 	}
 }
 
+// Lecture du fichier de config dans le mbed pour extraire panid et "server"
 void readConfig() {
 	pcc.printf("TRYING TO OPEN FILE \n\r");
 	FILE *fp = fopen("/local/config.txt", "r");
@@ -42,6 +47,7 @@ void readConfig() {
 	convertPanId(panId);
 }
 
+// Fonction de ticker qui fait allumer la DEL sur le router
 void flashLed() {
 	if (!ledOn) {
 		sendCommandRequest("D4", macAddressChar, 0x05, 1);
