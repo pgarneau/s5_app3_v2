@@ -30,13 +30,16 @@
 #define AT_QUEUE_COMMAND 0x09
 #define TRANSMIT_REQUEST 0x10
 #define REMOTE_AT_COMMAND 0x17
+
+//frame response type
 #define AT_COMMAND_RESPONSE 0x88
 #define MODEM_STATUS 0x8A
 #define TRANSMIT_STATUS 0x8B
 #define RECEIVE_PACKET 0x90
 
+
 void initXbee(char *panId);
-void readXbee();
+void readXbee(int command);
 void sendCommandRequest(char *command, char *mac, int parameter, int dataLength);
 void sendTransmit(char *data, int dataLength);
 #endif

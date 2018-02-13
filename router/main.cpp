@@ -94,7 +94,7 @@ int CalculateAngle(float z){
 			float zAxis = GetAxisAcc(accZRegisterMSB);
 			intAngle = CalculateAngle(zAxis);
 		if(intAngle>20){
-		pcc.printf("Angle is %i ::\n\r",intAngle);
+		pcc.printf("\n\rAngle is %i ::\n\r",intAngle);
 			char angle[] = {0x00,(char)intAngle};
 			int a = sizeof(angle);
 			sendTransmit(angle,a);
