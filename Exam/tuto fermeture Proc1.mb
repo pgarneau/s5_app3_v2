@@ -7,12 +7,13 @@
 
 | Physique  |  Couche marétiel |  
 |---|---|
-| MAC (liaison de données)  |transfert de données entre deux points, gère l'accès au canal </br> (**CSMA CD** : ecoute le fil savoir si qqc se passe dessus, si rien transmet le message  , <br>**CSMA CA**: si ya rien on attend puis on envoie le message au complet, pendant transmission, aucun moyen de savoir si qqn lutilise.  ), ACK,   
-| réseau  |  Routage de packet, gere adresse reseaux  <br> TCP : garantie service, en ordr, mode connecte <br> UDP: connecte ou broadcast <br> Aps : indirectement connect/ car on c parle a un noeud =≥ on sen sert pour definir des parametre dun noeud dans un structure. On end point : electronique, Application profile : parametre comment fonctionner **(voir procedural)**   |
+| MAC (liaison de données)  |transfert de données entre deux points, gère l'accès au canal <p>**CSMA CD** : ecoute le fil savoir si qqc se passe dessus, si rien transmet le message </p> **CSMA CA**: si ya rien on attend puis on envoie le message au complet, pendant transmission, aucun moyen de savoir si qqn lutilise.  ), ACK,  
+| réseau  |  Routage de packet, gere adresse reseaux  **TCP** : garantie service, en ordr, mode connecte  <p>**UDP**: connecte ou broadcast  Aps : indirectement connect/ car on c parle a un noeud =≥ on sen sert pour definir des parametre dun noeud dans un structure. On end point : electronique, Application profile : parametre comment fonctionner **(voir procedural)**   |
 |  Transport | Acheminage message  | 
 | Session  |  etablie un session  |
 | Présentation  |   presente linformation pour etre compativle avec la couche application|
 |  Application | programmes (zdo, zigbee)  | 
+![Screen Shot 2018-02-16 at 5.41.32 PM](https://i.imgur.com/ooLRxRz.png)
 <br>
 <br>
 
